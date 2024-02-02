@@ -1,6 +1,9 @@
 pragma solidity >=0.5.0 <0.6.0;
 
 contract HumanFactory {
+
+  event NewHuman(uint humanId, string name, uint dna);
+  
   uint dnaDigits = 16;
   uint dnaModulus = 10 ** dnaDigits;
   
@@ -11,10 +14,13 @@ contract HumanFactory {
 
   Human[] public humans;
 
-  event NewHuman(uint humanId, string name, uint dna);
+  mapping (uint => address) public humanToOwner;
+  mapping (address => uint) ownerHumanCount;
 
   function _createHuman(string memory _name, uint _dna) private {
-    uint id = humans.push(Human(_name, _dna));
+    uint id = humans.push(Human(_name, _dna)) - 1;
+    humanToOwner[id] = msg.sender;
+    ownerHumanCount[msg.sender]++;
     emit NewHuman(id, _name, _dna);
   }
 
@@ -24,6 +30,7 @@ contract HumanFactory {
   }
 
   function createRandomHuman(string memory _name) public {
+    require(ownerHumanCount[msg.sender] == 0);
     uint randDna = _generateRandomDna(_name);
     _createHuman(_name, randDna);
   }
