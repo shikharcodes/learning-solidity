@@ -17,7 +17,7 @@ contract HumanFactory {
   mapping (uint => address) public humanToOwner;
   mapping (address => uint) ownerHumanCount;
 
-  function _createHuman(string memory _name, uint _dna) private {
+  function _createHuman(string memory _name, uint _dna) internal {
     uint id = humans.push(Human(_name, _dna)) - 1;
     humanToOwner[id] = msg.sender;
     ownerHumanCount[msg.sender]++;
